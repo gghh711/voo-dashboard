@@ -3,298 +3,103 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>21點股票查詢系統</title>
+<title>21點股票查詢</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   :root {
-    --green:  #1D9E75;
-    --green-bg: #EAF3DE;
-    --green-txt: #3B6D11;
-    --red:    #E24B4A;
-    --red-bg: #FCEBEB;
-    --red-txt: #A32D2D;
-    --border: #E5E5E5;
-    --bg:     #F7F7F5;
-    --card:   #FFFFFF;
-    --text:   #1A1A1A;
-    --muted:  #888888;
-    --radius: 10px;
+    --green-txt: #3B6D11; --green-bg: #EAF3DE;
+    --red-txt:   #A32D2D; --red-bg:   #FCEBEB;
+    --border: #E5E5E5; --bg: #F7F7F5; --card: #FFFFFF;
+    --text: #1A1A1A; --muted: #888888; --radius: 10px;
   }
-
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC",
-                 "Noto Sans TC", sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-  }
-
-  /* ── Header ── */
-  header {
-    background: var(--card);
-    border-bottom: 0.5px solid var(--border);
-    padding: 16px 24px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    box-shadow: 0 1px 8px rgba(0,0,0,.04);
-  }
-  header .logo {
-    width: 34px; height: 34px;
-    background: var(--text);
-    border-radius: 8px;
-    display: flex; align-items: center; justify-content: center;
-    color: #fff; font-weight: 700; font-size: 14px; letter-spacing: -0.5px;
-    flex-shrink: 0;
-  }
-  header h1 { font-size: 16px; font-weight: 600; }
-  header .sub { font-size: 12px; color: var(--muted); margin-top: 1px; }
-
-  /* ── Layout ── */
-  .container { max-width: 960px; margin: 0 auto; padding: 24px 20px; }
-
-  /* ── Search ── */
-  .search-card {
-    background: var(--card);
-    border: 0.5px solid var(--border);
-    border-radius: var(--radius);
-    padding: 20px;
-    margin-bottom: 20px;
-  }
-  .search-row {
-    display: flex; gap: 10px; margin-bottom: 14px;
-  }
-  .search-row input {
-    flex: 1;
-    font-size: 18px; font-weight: 500;
-    padding: 11px 16px;
-    border: 1.5px solid var(--border);
-    border-radius: 8px;
-    background: var(--bg);
-    color: var(--text);
-    outline: none;
-    transition: border-color .15s;
-    font-family: inherit;
-    letter-spacing: 1px;
-  }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", sans-serif;
+         background: var(--bg); color: var(--text); min-height: 100vh; }
+  header { background: var(--card); border-bottom: 0.5px solid var(--border);
+           padding: 14px 24px; display: flex; align-items: center; gap: 12px;
+           position: sticky; top: 0; z-index: 100; box-shadow: 0 1px 6px rgba(0,0,0,.04); }
+  .logo { width: 32px; height: 32px; background: var(--text); border-radius: 7px;
+          display: flex; align-items: center; justify-content: center;
+          color: #fff; font-weight: 700; font-size: 13px; flex-shrink: 0; }
+  header h1 { font-size: 15px; font-weight: 600; }
+  header .sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
+  .container { max-width: 900px; margin: 0 auto; padding: 20px 16px; }
+  .search-card { background: var(--card); border: 0.5px solid var(--border);
+                 border-radius: var(--radius); padding: 18px; margin-bottom: 18px; }
+  .search-row { display: flex; gap: 10px; margin-bottom: 12px; }
+  .search-row input { flex: 1; font-size: 17px; font-weight: 500; padding: 10px 14px;
+                      border: 1.5px solid var(--border); border-radius: 8px;
+                      background: var(--bg); color: var(--text); outline: none;
+                      font-family: inherit; letter-spacing: 0.5px; }
   .search-row input:focus { border-color: var(--text); }
   .search-row input::placeholder { color: #bbb; font-weight: 400; letter-spacing: 0; }
-  .btn-search {
-    padding: 11px 28px;
-    background: var(--text);
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    font-size: 15px;
-    font-weight: 500;
-    cursor: pointer;
-    font-family: inherit;
-    transition: opacity .15s;
-    white-space: nowrap;
-  }
-  .btn-search:hover { opacity: .82; }
-  .btn-search:disabled { opacity: .4; cursor: default; }
-
-  .quick-label { font-size: 11px; color: var(--muted); margin-bottom: 8px; }
-  .quick-btns { display: flex; flex-wrap: wrap; gap: 7px; }
-  .qb {
-    font-size: 12px; padding: 4px 11px;
-    border-radius: 20px;
-    border: 0.5px solid var(--border);
-    background: transparent;
-    color: var(--muted);
-    cursor: pointer;
-    font-family: inherit;
-    transition: all .12s;
-  }
-  .qb:hover { background: var(--bg); color: var(--text); border-color: #ccc; }
-
-  /* ── Status ── */
-  .status-bar {
-    font-size: 13px; min-height: 22px;
-    margin-bottom: 16px; color: var(--muted);
-    display: flex; align-items: center; gap: 6px;
-  }
-  .status-bar.ok  { color: var(--green-txt); }
-  .status-bar.err { color: var(--red-txt); }
-  .spinner {
-    width: 14px; height: 14px;
-    border: 2px solid #ddd;
-    border-top-color: var(--text);
-    border-radius: 50%;
-    animation: spin .7s linear infinite;
-    display: none;
-  }
-  .status-bar.loading .spinner { display: block; }
+  .btn { padding: 10px 24px; background: var(--text); color: #fff; border: none;
+         border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer;
+         font-family: inherit; white-space: nowrap; }
+  .btn:hover { opacity: .82; } .btn:disabled { opacity: .4; cursor: default; }
+  .quick { display: flex; flex-wrap: wrap; gap: 6px; }
+  .qb { font-size: 11px; padding: 3px 10px; border-radius: 20px;
+        border: 0.5px solid var(--border); background: transparent;
+        color: var(--muted); cursor: pointer; font-family: inherit; }
+  .qb:hover { background: var(--bg); color: var(--text); }
+  .status { font-size: 12px; min-height: 20px; margin-bottom: 14px; color: var(--muted);
+            display: flex; align-items: center; gap: 6px; }
+  .status.ok { color: var(--green-txt); } .status.err { color: var(--red-txt); }
   @keyframes spin { to { transform: rotate(360deg); } }
-
-  /* ── Summary Cards ── */
-  .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-bottom: 16px; }
-  .sc {
-    background: var(--card);
-    border: 0.5px solid var(--border);
-    border-radius: 8px;
-    padding: 13px 14px;
-    text-align: center;
-  }
-  .sc-v { font-size: 22px; font-weight: 600; display: block; line-height: 1.2; }
-  .sc-l { font-size: 11px; color: var(--muted); margin-top: 4px; }
-  .sc-side {
-    font-size: 13px; font-weight: 600;
-    padding: 3px 10px; border-radius: 6px;
-    display: inline-block; margin-top: 2px;
-  }
-
-  /* ── Gauge ── */
-  .gauge-card {
-    background: var(--card);
-    border: 0.5px solid var(--border);
-    border-radius: 8px;
-    padding: 14px 16px;
-    margin-bottom: 16px;
-  }
-  .gauge-label { font-size: 11px; color: var(--muted); margin-bottom: 8px; font-weight: 500; }
-  .gauge-track {
-    height: 20px; border-radius: 10px;
-    background: var(--bg); overflow: hidden; position: relative;
-  }
-  .gauge-fill {
-    height: 100%; border-radius: 10px;
-    transition: width .5s ease, background .4s;
-  }
-  .gauge-marks {
-    position: relative; height: 0;
-  }
-  .gauge-mark {
-    position: absolute; top: -20px;
-    width: 1px; height: 20px;
-    background: rgba(0,0,0,.1);
-  }
-  .gauge-lbls {
-    display: flex; justify-content: space-between;
-    font-size: 10px; color: var(--muted); margin-top: 5px;
-  }
-  .gauge-zone-labels {
-    display: flex; margin-top: 6px; font-size: 10px;
-  }
-  .gz {
-    text-align: center; padding: 2px 4px; border-radius: 3px;
-    font-weight: 500;
-  }
-
-  /* ── Table ── */
-  .table-card {
-    background: var(--card);
-    border: 0.5px solid var(--border);
-    border-radius: var(--radius);
-    overflow: hidden;
-    margin-bottom: 16px;
-  }
-  .table-scroll { max-height: 500px; overflow-y: auto; }
-  table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  thead th {
-    font-size: 11px; font-weight: 500; color: var(--muted);
-    text-align: right; padding: 9px 10px;
-    border-bottom: 0.5px solid var(--border);
-    background: var(--card);
-    position: sticky; top: 0; z-index: 2;
-    white-space: nowrap;
-  }
+  .spinner { width: 13px; height: 13px; border: 2px solid #ddd; border-top-color: var(--text);
+             border-radius: 50%; animation: spin .7s linear infinite; display: none; }
+  .status.loading .spinner { display: block; }
+  .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+             gap: 9px; margin-bottom: 14px; }
+  .sc { background: var(--card); border: 0.5px solid var(--border); border-radius: 8px;
+        padding: 12px 13px; text-align: center; }
+  .sc-v { font-size: 21px; font-weight: 600; display: block; line-height: 1.2; }
+  .sc-l { font-size: 10px; color: var(--muted); margin-top: 3px; }
+  .sc-side { font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 6px;
+             display: inline-block; margin-top: 2px; }
+  .gauge-card { background: var(--card); border: 0.5px solid var(--border);
+                border-radius: 8px; padding: 13px 15px; margin-bottom: 14px; }
+  .gauge-lbl { font-size: 10px; color: var(--muted); margin-bottom: 7px; font-weight: 500; }
+  .gauge-track { height: 18px; border-radius: 9px; background: var(--bg); overflow: hidden; }
+  .gauge-fill { height: 100%; border-radius: 9px; transition: width .5s ease, background .4s; }
+  .gauge-ticks { display: flex; justify-content: space-between;
+                 font-size: 10px; color: var(--muted); margin-top: 4px; }
+  .table-card { background: var(--card); border: 0.5px solid var(--border);
+                border-radius: var(--radius); overflow: hidden; margin-bottom: 14px; }
+  .tscroll { max-height: 480px; overflow-y: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  thead th { font-size: 10px; font-weight: 500; color: var(--muted); text-align: right;
+             padding: 8px 9px; border-bottom: 0.5px solid var(--border);
+             background: var(--card); position: sticky; top: 0; z-index: 2; white-space: nowrap; }
   thead th:first-child { text-align: left; }
-  tbody td {
-    text-align: right; padding: 7px 10px;
-    border-bottom: 0.5px solid #F5F5F5;
-  }
-  tbody td:first-child { text-align: left; font-size: 12px; color: var(--muted); }
+  tbody td { text-align: right; padding: 6px 9px; border-bottom: 0.5px solid #F5F5F5; }
+  tbody td:first-child { text-align: left; font-size: 11px; color: var(--muted); }
   tbody tr:hover td { background: #FAFAFA; }
   tbody tr:last-child td { border-bottom: none; }
-  .up  { color: var(--green-txt); font-weight: 500; }
-  .dn  { color: var(--red-txt);   font-weight: 500; }
-  .badge {
-    font-size: 11px; padding: 2px 7px; border-radius: 4px; font-weight: 600;
-  }
+  .up { color: var(--green-txt); font-weight: 500; } .dn { color: var(--red-txt); font-weight: 500; }
+  .badge { font-size: 10px; padding: 2px 7px; border-radius: 4px; font-weight: 600; }
   .bm { background: var(--green-bg); color: var(--green-txt); }
-  .bs { background: var(--red-bg);   color: var(--red-txt);   }
-  .bn { background: #F1EFE8; color: #888; }
-  .pt-num { font-weight: 700; font-size: 14px; }
-
-  /* ── Empty / Error ── */
-  .empty {
-    text-align: center; padding: 50px 20px;
-    color: var(--muted); font-size: 14px; line-height: 2;
-  }
-  .empty-icon { font-size: 36px; margin-bottom: 10px; }
-
-  /* ── Note ── */
-  .note {
-    background: var(--card);
-    border: 0.5px solid var(--border);
-    border-radius: 8px;
-    padding: 12px 16px;
-    font-size: 12px;
-    color: var(--muted);
-    line-height: 1.8;
-  }
+  .bs { background: var(--red-bg); color: var(--red-txt); }
+  .pt-cell { font-weight: 700; font-size: 13px; }
+  .empty { text-align: center; padding: 44px 20px; color: var(--muted); font-size: 13px; line-height: 2; }
+  .note { background: var(--card); border: 0.5px solid var(--border); border-radius: 8px;
+          padding: 11px 14px; font-size: 11px; color: var(--muted); line-height: 1.8; }
   .note b { color: var(--text); }
-
-  /* ── Formula Box ── */
-  .formula-box {
-    background: var(--card);
-    border: 0.5px solid var(--border);
-    border-radius: var(--radius);
-    padding: 20px;
-    margin-bottom: 20px;
-  }
-  .formula-box h2 { font-size: 14px; font-weight: 600; margin-bottom: 12px; }
-  .formula-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; }
-  .fcard {
-    background: var(--bg);
-    border-radius: 8px;
-    padding: 12px 14px;
-    border: 0.5px solid var(--border);
-  }
-  .fcard .fpt { font-size: 22px; font-weight: 700; }
-  .fcard .frange { font-size: 11px; color: var(--muted); margin-top: 2px; }
-  .fcard .fdesc { font-size: 12px; margin-top: 5px; }
-
-  /* ── Responsive ── */
-  @media (max-width: 600px) {
-    header { padding: 12px 16px; }
-    .container { padding: 16px 14px; }
-    .search-row input { font-size: 16px; }
-    .summary { grid-template-columns: repeat(3, 1fr); }
-    .sc-v { font-size: 18px; }
-    table { font-size: 12px; }
-    thead th, tbody td { padding: 6px 7px; }
-  }
 </style>
 </head>
 <body>
-
 <header>
   <div class="logo">21</div>
-  <div>
-    <h1>21點股票查詢</h1>
-    <div class="sub">差值 × 點數 即時計算</div>
-  </div>
+  <div><h1>21點股票查詢</h1><div class="sub">差值 × 點數 即時計算</div></div>
 </header>
-
 <div class="container">
-
-  <!-- Search -->
   <div class="search-card">
     <div class="search-row">
-      <input type="text" id="inp" placeholder="輸入代碼，如 2330 或 QQQ"
-        maxlength="8" autocomplete="off" autocapitalize="characters"
-        onkeydown="if(event.key==='Enter')go()">
-      <button class="btn-search" id="searchBtn" onclick="go()">查詢</button>
+      <input id="inp" type="text" placeholder="輸入代碼，如 2330 或 QQQ"
+        maxlength="8" autocomplete="off" onkeydown="if(event.key==='Enter')go()">
+      <button class="btn" id="searchBtn" onclick="go()">查詢</button>
     </div>
-    <div class="quick-label">常用股票</div>
-    <div class="quick-btns">
+    <div class="quick">
+      <span style="font-size:11px;color:var(--muted);align-self:center">常用：</span>
       <button class="qb" onclick="q('2330')">台積電 2330</button>
       <button class="qb" onclick="q('2327')">國巨 2327</button>
       <button class="qb" onclick="q('2344')">華邦電 2344</button>
@@ -302,310 +107,97 @@
       <button class="qb" onclick="q('0050')">元大50 0050</button>
       <button class="qb" onclick="q('2454')">聯發科 2454</button>
       <button class="qb" onclick="q('2317')">鴻海 2317</button>
-      <button class="qb" onclick="q('2382')">廣達 2382</button>
       <button class="qb" onclick="q('QQQ')">QQQ</button>
       <button class="qb" onclick="q('VOO')">VOO</button>
     </div>
   </div>
-
-  <!-- Status -->
-  <div class="status-bar" id="statusBar">
-    <div class="spinner" id="spinner"></div>
-    <span id="statusMsg">輸入股票代碼後按查詢</span>
+  <div class="status" id="st">
+    <div class="spinner" id="sp"></div>
+    <span id="stMsg">輸入股票代碼後按查詢</span>
   </div>
-
-  <!-- Results -->
   <div id="results"></div>
-
-  <!-- Formula Reference -->
-  <div class="formula-box">
-    <h2>公式說明 — 差值 ↔ 點數 對照</h2>
-    <div class="formula-grid">
-      <div class="fcard">
-        <div class="fpt" style="color:var(--red-txt)">0</div>
-        <div class="frange">差值 0 ～ 2.2</div>
-        <div class="fdesc" style="color:var(--red-txt)">空方最弱（差值&lt;10特殊條件）</div>
-      </div>
-      <div class="fcard">
-        <div class="fpt" style="color:var(--red-txt)">3</div>
-        <div class="frange">差值 6.8 ～ 9.0</div>
-        <div class="fdesc" style="color:var(--red-txt)">空方弱</div>
-      </div>
-      <div class="fcard">
-        <div class="fpt" style="color:var(--red-txt)">10</div>
-        <div class="frange">差值 22.5 ～ 24.8</div>
-        <div class="fdesc" style="color:var(--red-txt)">空方中</div>
-      </div>
-      <div class="fcard">
-        <div class="fpt" style="color:var(--green-txt)">11</div>
-        <div class="frange">差值 49.5 ～ 54.0</div>
-        <div class="fdesc" style="color:var(--green-txt)">多方中</div>
-      </div>
-      <div class="fcard">
-        <div class="fpt" style="color:var(--green-txt)">18</div>
-        <div class="frange">差值 76.5 ～ 81.0</div>
-        <div class="fdesc" style="color:var(--green-txt)">多方強</div>
-      </div>
-      <div class="fcard">
-        <div class="fpt" style="color:var(--green-txt)">21</div>
-        <div class="frange">差值 90.0 ～ 94.5</div>
-        <div class="fdesc" style="color:var(--green-txt)">多方最強（差值&gt;90特殊條件）</div>
-      </div>
-    </div>
-    <div style="margin-top:14px;font-size:12px;color:var(--muted);line-height:1.8">
-      <b style="color:var(--text)">核心公式：</b>
-      差值 = ADX 14日（趨向指數，限縮至 0～94.5）<br>
-      點數 = round( 差值 ÷ 94.5 × 21 )　│　差值差 = 今日差值 − 昨日差值（斜率）<br>
-      點數 &gt; 10 → 多方（綠綠）　│　點數 ≤ 10 → 空方（紅紅）
-    </div>
-  </div>
-
 </div>
-
 <script>
-// ── ADX 14日計算 ──────────────────────────────────────
-function calcADX(H, L, C, p = 14) {
-  const n = C.length;
-  const TR = [], PDM = [], NDM = [];
-  for (let i = 1; i < n; i++) {
-    TR.push(Math.max(H[i]-L[i], Math.abs(H[i]-C[i-1]), Math.abs(L[i]-C[i-1])));
-    const up = H[i]-H[i-1], dn = L[i-1]-L[i];
-    PDM.push(up > dn && up > 0 ? up : 0);
-    NDM.push(dn > up && dn > 0 ? dn : 0);
-  }
-  function ws(a) {
-    let s = a.slice(0, p).reduce((x, y) => x + y, 0);
-    const r = [s];
-    for (let i = p; i < a.length; i++) { s = s - s/p + a[i]; r.push(s); }
-    return r;
-  }
-  const sTR = ws(TR), sPDM = ws(PDM), sNDM = ws(NDM);
-  const DX = sTR.map((tr, i) => {
-    const pi = tr ? 100*sPDM[i]/tr : 0, ni = tr ? 100*sNDM[i]/tr : 0;
-    return (pi+ni) ? 100*Math.abs(pi-ni)/(pi+ni) : 0;
-  });
-  let adx = DX.slice(0, p).reduce((a, b) => a+b, 0) / p;
-  const ADX = [adx];
-  for (let i = p; i < DX.length; i++) { adx = (adx*(p-1)+DX[i])/p; ADX.push(adx); }
-  return new Array(p*2-1).fill(null).concat(ADX);
+const API_BASE = 'https://voo-stock.onrender.com';
+
+function q(c) { document.getElementById('inp').value = c; go(); }
+function setSt(msg, cls) {
+  const bar = document.getElementById('st');
+  bar.className = 'status' + (cls ? ' ' + cls : '');
+  document.getElementById('stMsg').textContent = msg;
 }
 
-function toPt(adx) {
-  if (adx == null || isNaN(adx)) return null;
-  const d = Math.min(94.5, Math.max(0, adx));
-  return Math.min(21, Math.max(0, Math.round(d / 94.5 * 21)));
-}
-
-// ── Yahoo Finance 抓取 ────────────────────────────────
-async function fetchYahoo(ticker, days = 365) {
-  const now   = Math.floor(Date.now() / 1000);
-  const start = now - days * 86400;
-  const HEADERS = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-    'Accept': 'application/json',
-    'Referer': 'https://finance.yahoo.com'
-  };
-  const endpoints = [
-    `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?interval=1d&period1=${start}&period2=${now}`,
-    `https://query2.finance.yahoo.com/v8/finance/chart/${ticker}?interval=1d&period1=${start}&period2=${now}`,
-  ];
-  for (const url of endpoints) {
-    try {
-      const r = await fetch(url, { headers: HEADERS, signal: AbortSignal.timeout(9000) });
-      if (!r.ok) continue;
-      const json = await r.json();
-      const res = json?.chart?.result?.[0];
-      if (res) return res;
-    } catch(e) { continue; }
-  }
-  throw new Error('無法連線至 Yahoo Finance，請稍後再試');
-}
-
-// ── UI Helpers ────────────────────────────────────────
-function setStatus(msg, cls) {
-  const bar = document.getElementById('statusBar');
-  const txt = document.getElementById('statusMsg');
-  bar.className = 'status-bar' + (cls ? ' ' + cls : '');
-  txt.textContent = msg;
-}
-
-function q(code) {
-  document.getElementById('inp').value = code;
-  go();
-}
-
-// ── Main Query ────────────────────────────────────────
 async function go() {
-  const raw  = document.getElementById('inp').value.trim();
-  const code = raw.replace(/[^0-9A-Za-z^.]/g, '').toUpperCase();
-  if (!code) { setStatus('請輸入股票代碼', 'err'); return; }
-
-  const ticker = /^\d{4}$/.test(code) ? code + '.TW' : code;
+  const code = document.getElementById('inp').value.trim().replace(/[^0-9A-Za-z^.]/g,'').toUpperCase();
+  if (!code) { setSt('請輸入股票代碼','err'); return; }
   const btn = document.getElementById('searchBtn');
   btn.disabled = true;
-  setStatus('查詢中…', 'loading');
+  setSt('查詢中，請稍候…','loading');
   document.getElementById('results').innerHTML = '';
-
   try {
-    const chart = await fetchYahoo(ticker, 365);
-    const ts    = chart.timestamp;
-    const q     = chart.indicators.quote[0];
-    const { open: O, high: H, low: L, close: C, volume: V } = q;
-    const meta  = chart.meta;
-    const name  = meta.longName || meta.shortName || code;
-    const currency = meta.currency || '';
-
-    // Filter nulls
-    const valid = [];
-    for (let i = 0; i < ts.length; i++) {
-      if (C[i] == null || H[i] == null || L[i] == null) continue;
-      valid.push({ ts: ts[i], o: O[i] ?? C[i], h: H[i], l: L[i], c: C[i], v: V[i] ?? 0 });
-    }
-    if (valid.length < 30) throw new Error('數據不足，請確認代碼是否正確');
-
-    const Hi = valid.map(r => r.h);
-    const Lo = valid.map(r => r.l);
-    const Cl = valid.map(r => r.c);
-    const adxArr = calcADX(Hi, Lo, Cl, 14);
-
-    const rows = [];
-    for (let i = valid.length - 1; i >= 0 && rows.length < 60; i--) {
-      const adx      = adxArr[i];
-      const diff     = adx != null ? +Math.min(94.5, Math.max(0, adx)).toFixed(1) : null;
-      const prevAdx  = adxArr[i-1];
-      const prevDiff = prevAdx != null ? +Math.min(94.5, Math.max(0, prevAdx)).toFixed(1) : null;
-      const dd       = diff != null && prevDiff != null ? +(diff - prevDiff).toFixed(2) : null;
-      const pt       = toPt(adx);
-      const pr       = valid[i];
-      const chg      = i > 0 ? +(pr.c - valid[i-1].c).toFixed(2) : null;
-      const chgP     = chg != null && valid[i-1].c ? +(chg / valid[i-1].c * 100).toFixed(2) : null;
-      const d        = new Date(pr.ts * 1000);
-      const ds       = d.toLocaleDateString('zh-TW', {
-        timeZone: 'Asia/Taipei', year: 'numeric', month: '2-digit', day: '2-digit'
-      }).replace(/\//g, '');
-      rows.push({ ds, close: +pr.c.toFixed(2), diff, dd, pt, chg, chgP });
-    }
-
-    renderResults(name, code, currency, rows);
-    setStatus(`✓ ${name}（${code}）— 最近 ${rows.length} 個交易日`, 'ok');
-
+    const res  = await fetch(`${API_BASE}/api/stock?code=${encodeURIComponent(code)}`, { signal: AbortSignal.timeout(25000) });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    if (!data.rows || !data.rows.length) throw new Error('無數據');
+    render(data.name, data.code, data.rows);
+    setSt(`✓ ${data.name}（${data.code}）— 最近 ${data.rows.length} 個交易日`, 'ok');
   } catch(e) {
-    document.getElementById('results').innerHTML = `
-      <div class="table-card">
-        <div class="empty">
-          <div class="empty-icon">⚠️</div>
-          ${e.message}<br>
-          <span style="font-size:12px;color:#bbb">
-            台股請用4位數字代碼（如 2330）<br>
-            美股 ETF 請用英文代號（如 QQQ、VOO）
-          </span>
-        </div>
-      </div>`;
-    setStatus('查詢失敗', 'err');
-  } finally {
-    btn.disabled = false;
-  }
+    document.getElementById('results').innerHTML =
+      `<div class="table-card"><div class="empty">⚠️ ${e.message}<br>
+      <span style="font-size:11px;color:#bbb">台股用4位數字（2330）；美股用英文代號（QQQ）<br>
+      Render 伺服器首次喚醒需約 30 秒，請稍後再試</span></div></div>`;
+    setSt('查詢失敗','err');
+  } finally { btn.disabled = false; }
 }
 
-function renderResults(name, code, currency, rows) {
-  const L   = rows[0];
-  const col = L.pt != null && L.pt > 10 ? 'var(--green-txt)' : 'var(--red-txt)';
-  const bg  = L.pt != null && L.pt > 10 ? 'var(--green-bg)' : 'var(--red-bg)';
+function render(name, code, rows) {
+  const L = rows[0];
+  const col  = L.pt != null && L.pt > 10 ? 'var(--green-txt)' : 'var(--red-txt)';
+  const bg   = L.pt != null && L.pt > 10 ? 'var(--green-bg)'  : 'var(--red-bg)';
   const side = L.pt != null ? (L.pt > 10 ? '多方（綠）' : '空方（紅）') : '—';
-  const pct  = (L.diff ?? 0) / 94.5 * 100;
-  const fillColor = L.pt != null && L.pt > 10 ? 'var(--green)' : 'var(--red)';
-
-  const ddColor = L.dd != null ? (L.dd > 0 ? 'var(--green-txt)' : L.dd < 0 ? 'var(--red-txt)' : 'inherit') : 'inherit';
-  const chgColor = L.chg != null ? (L.chg > 0 ? 'var(--green-txt)' : L.chg < 0 ? 'var(--red-txt)' : 'inherit') : 'inherit';
-
-  // Table rows
+  const pct  = ((L.diff ?? 0) / 94.5 * 100).toFixed(1);
+  const fillC = L.pt != null && L.pt > 10 ? '#1D9E75' : '#E24B4A';
+  const ddCol  = L.dd  != null ? (L.dd  > 0 ? 'var(--green-txt)' : L.dd  < 0 ? 'var(--red-txt)' : 'inherit') : 'inherit';
+  const chgCol = L.chg != null ? (L.chg > 0 ? 'var(--green-txt)' : L.chg < 0 ? 'var(--red-txt)' : 'inherit') : 'inherit';
   let trs = '';
   rows.forEach(r => {
-    const pc  = r.chg != null ? (r.chg > 0 ? 'up' : r.chg < 0 ? 'dn' : '') : '';
-    const dc  = r.dd  != null ? (r.dd  > 0 ? 'up' : r.dd  < 0 ? 'dn' : '') : '';
-    const ptc = r.pt  != null ? (r.pt  > 10 ? 'var(--green-txt)' : 'var(--red-txt)') : '#888';
-    const sb  = r.pt  != null ? (r.pt  > 10 ? 'bm' : 'bs') : 'bn';
-    const sideShort = r.pt != null ? (r.pt > 10 ? '多' : '空') : '—';
+    const pc  = r.chg_p > 0 ? 'up' : r.chg_p < 0 ? 'dn' : '';
+    const dc  = r.dd    > 0 ? 'up' : r.dd    < 0 ? 'dn' : '';
+    const ptc = r.pt != null ? (r.pt > 10 ? 'var(--green-txt)' : 'var(--red-txt)') : '#888';
+    const sb  = r.pt != null ? (r.pt > 10 ? 'bm' : 'bs') : '';
     trs += `<tr>
-      <td>${r.ds}</td>
-      <td>${r.close.toLocaleString()}</td>
-      <td class="${pc}">${r.chgP != null ? (r.chgP > 0 ? '+' : '') + r.chgP + '%' : '—'}</td>
-      <td><b>${r.diff ?? '—'}</b></td>
-      <td class="${dc}">${r.dd != null ? (r.dd > 0 ? '+' : '') + r.dd : '—'}</td>
-      <td class="pt-num" style="color:${ptc}">${r.pt ?? '—'}</td>
-      <td><span class="badge ${sb}">${sideShort}</span></td>
+      <td>${r.date}</td>
+      <td>${(r.close??0).toLocaleString()}</td>
+      <td class="${pc}">${r.chg_p!=null?(r.chg_p>0?'+':'')+r.chg_p+'%':'—'}</td>
+      <td><b>${r.diff??'—'}</b></td>
+      <td class="${dc}">${r.dd!=null?(r.dd>0?'+':'')+r.dd:'—'}</td>
+      <td class="pt-cell" style="color:${ptc}">${r.pt??'—'}</td>
+      <td><span class="badge ${sb}">${r.pt!=null?(r.pt>10?'多':'空'):'—'}</span></td>
     </tr>`;
   });
-
   document.getElementById('results').innerHTML = `
-    <!-- Summary -->
     <div class="summary">
-      <div class="sc">
-        <span class="sc-v" style="color:${col}">${L.pt ?? '—'}</span>
-        <div class="sc-l">今日點數</div>
-      </div>
-      <div class="sc">
-        <span class="sc-v">${L.diff ?? '—'}</span>
-        <div class="sc-l">今日差值</div>
-      </div>
-      <div class="sc">
-        <span class="sc-v" style="color:${ddColor}">${L.dd != null ? (L.dd > 0 ? '+' : '') + L.dd : '—'}</span>
-        <div class="sc-l">差值差（斜率）</div>
-      </div>
-      <div class="sc">
-        <span class="sc-v" style="color:${chgColor}">${L.close.toLocaleString()}</span>
-        <div class="sc-l">收盤價 ${currency}</div>
-      </div>
-      <div class="sc">
-        <span class="sc-side" style="background:${bg};color:${col}">${side}</span>
-        <div class="sc-l">目前方向</div>
-      </div>
+      <div class="sc"><span class="sc-v" style="color:${col}">${L.pt??'—'}</span><div class="sc-l">今日點數</div></div>
+      <div class="sc"><span class="sc-v">${L.diff??'—'}</span><div class="sc-l">今日差值</div></div>
+      <div class="sc"><span class="sc-v" style="color:${ddCol}">${L.dd!=null?(L.dd>0?'+':'')+L.dd:'—'}</span><div class="sc-l">差值差</div></div>
+      <div class="sc"><span class="sc-v" style="color:${chgCol}">${(L.close??0).toLocaleString()}</span><div class="sc-l">收盤價</div></div>
+      <div class="sc"><span class="sc-side" style="background:${bg};color:${col}">${side}</span><div class="sc-l">方向</div></div>
     </div>
-
-    <!-- Gauge -->
     <div class="gauge-card">
-      <div class="gauge-label">差值位置（0 ～ 94.5）　現在：${L.diff ?? '—'}</div>
-      <div class="gauge-marks">
-        <div class="gauge-mark" style="left:10.6%"></div>
-        <div class="gauge-mark" style="left:52.9%"></div>
-        <div class="gauge-mark" style="left:84.7%"></div>
-        <div class="gauge-mark" style="left:95.2%"></div>
-      </div>
-      <div class="gauge-track">
-        <div class="gauge-fill" style="width:${pct.toFixed(1)}%;background:${fillColor}"></div>
-      </div>
-      <div class="gauge-lbls">
-        <span>0</span><span>10</span><span>50</span><span>80</span><span>90</span><span>94.5</span>
-      </div>
+      <div class="gauge-lbl">差值位置（0 ～ 94.5）　現在：${L.diff??'—'}</div>
+      <div class="gauge-track"><div class="gauge-fill" style="width:${pct}%;background:${fillC}"></div></div>
+      <div class="gauge-ticks"><span>0</span><span>10</span><span>50</span><span>80</span><span>90</span><span>94.5</span></div>
     </div>
-
-    <!-- Table -->
-    <div class="table-card">
-      <div class="table-scroll">
-        <table>
-          <thead>
-            <tr>
-              <th style="text-align:left">日期</th>
-              <th>收盤價</th>
-              <th>漲跌%</th>
-              <th>差值</th>
-              <th>差值差</th>
-              <th>點數</th>
-              <th>多空</th>
-            </tr>
-          </thead>
-          <tbody>${trs}</tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- Note -->
+    <div class="table-card"><div class="tscroll"><table>
+      <thead><tr>
+        <th style="text-align:left">日期</th>
+        <th>收盤</th><th>漲跌%</th><th>差值</th><th>差值差</th><th>點數</th><th>多空</th>
+      </tr></thead>
+      <tbody>${trs}</tbody>
+    </table></div></div>
     <div class="note">
-      <b>${name}（${code}）</b>　資料來源：Yahoo Finance　最近 ${rows.length} 個交易日<br>
-      差值 = ADX 14日趨向指數（限縮至 0～94.5）　點數 = round( 差值 ÷ 94.5 × 21 )<br>
-      差值差 = 今日差值 − 昨日差值　差值差 &gt; 0 → 趨勢增強　差值差 &lt; 0 → 趨勢減弱
-    </div>
-  `;
+      <b>${name}（${code}）</b>　差值 = ADX 14日（0～94.5）　點數 = round( 差值 ÷ 94.5 × 21 )
+    </div>`;
 }
 </script>
 </body>
